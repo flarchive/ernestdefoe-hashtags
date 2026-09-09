@@ -1,0 +1,14 @@
+/vendor
+/js/node_modules
+/js/dist-typings
+/composer.lock
+/js/package-lock.json
+/.idea
+/.vscode
+/.claude
+*.log
+.DS_Store
+Thumbs.db
+
+# Announcement drafts — marketing copy, kept locally, not part of the package
+/docs/announcement*.md
