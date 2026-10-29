@@ -1,0 +1,92 @@
+{
+    "name": "ernestdefoe/hashtags",
+    "description": "Freeform hashtags for Flarum 2. Write #anything in a post and it becomes a link to a feed of every discussion using it — no admin setup, no pre-created tags. Coexists with flarum/tags: a # that matches a real tag slug stays a tag mention.",
+    "type": "flarum-extension",
+    "keywords": [
+        "flarum",
+        "hashtags",
+        "tags",
+        "discovery",
+        "mentions"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ernestdefoe",
+            "email": "ernestdefoe@gmail.com"
+        }
+    ],
+    "support": {
+        "forum": "https://discuss.flarum.org/d/39834-hashtags"
+    },
+    "require": {
+        "php": "^8.3",
+        "flarum/core": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ernestdefoe\\Hashtags\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Hashtags",
+            "category": "feature",
+            "icon": {
+                "name": "fas fa-hashtag",
+                "backgroundColor": "#3b6cb5",
+                "color": "#ffffff"
+            },
+            "optional-dependencies": [
+                "flarum/mentions",
+                "flarum/tags"
+            ]
+        },
+        "flarum-cli": {
+            "modules": {
+                "admin": true,
+                "forum": true,
+                "js": true,
+                "jsCommon": false,
+                "css": true,
+                "locale": true,
+                "gitConf": true,
+                "githubActions": false,
+                "prettier": false,
+                "typescript": false,
+                "bundlewatch": false,
+                "backendTesting": false,
+                "editorConfig": false,
+                "styleci": false
+            }
+        }
+    },
+    "minimum-stability": "beta",
+    "prefer-stable": true,
+    "require-dev": {
+        "flarum/phpstan": "^2.0",
+        "flarum/testing": "^2.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ernestdefoe\\Hashtags\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "@test:unit",
+            "@test:integration"
+        ],
+        "test:unit": "phpunit -c tests/phpunit.unit.xml",
+        "test:integration": "phpunit -c tests/phpunit.integration.xml",
+        "test:setup": "@php tests/integration/setup.php",
+        "analyse:phpstan": "phpstan analyse"
+    },
+    "scripts-descriptions": {
+        "test": "Runs all tests.",
+        "test:unit": "Runs all unit tests.",
+        "test:integration": "Runs all integration tests.",
+        "test:setup": "Sets up a database for use with integration tests. Execute this only once.",
+        "analyse:phpstan": "Run static analysis"
+    }
+}

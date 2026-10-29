@@ -1,0 +1,23 @@
+name: Hashtags JS
+
+on: [workflow_dispatch, push, pull_request]
+
+# Type-checking is why 2.0.1 existed: `app.extensionData` is a Flarum 1.x API
+# that does not exist on Flarum 2's AdminApplication. It shipped in 2.0.0,
+# crashed the whole admin bundle, and `tsc` flags it outright — it had simply
+# never been run. enable_typescript runs check-typings on every push.
+jobs:
+  run:
+    uses: flarum/framework/.github/workflows/REUSABLE_frontend.yml@2.x
+    with:
+      enable_bundlewatch: false
+      enable_prettier: true
+      enable_typescript: true
+
+      frontend_directory: ./js
+      backend_directory: .
+      js_package_manager: npm
+      # Checks only: js/dist is committed by hand and released from main, so
+      # the build is never committed back. Nothing is ever pushed to this
+      # branch name, which keeps the workflow's commit step switched off.
+      main_git_branch: never-commit-built-assets
