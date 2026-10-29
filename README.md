@@ -2,18 +2,13 @@
 
 > **Read-only archive of released versions of ernestdefoe/hashtags.** Not for installation: use [Packagist](https://packagist.org/packages/ernestdefoe/hashtags) or the [upstream repository](https://github.com/ernestdefoe/hashtags).
 
-**6** versions archived · Latest: [`2.0.5`](https://github.com/flarchive/ernestdefoe-hashtags/tree/archive/v2.0.5) · License: `MIT` · Flarum: `^2.0`
+**0** versions archived · Latest: [`2.0.6`](https://github.com/flarchive/ernestdefoe-hashtags/tree/archive/v2.0.6) · License: `MIT` · Flarum: `^2.0`
 
 ## Archived Versions
 
 | Version | Released | Flarum | Source |
 |---|---|---|---|
-| `2.0.0` | 2026-09-09 | `^2.0` | [Browse](https://github.com/flarchive/ernestdefoe-hashtags/tree/archive/v2.0.0) |
-| `2.0.1` | 2026-09-09 | `^2.0` | [Browse](https://github.com/flarchive/ernestdefoe-hashtags/tree/archive/v2.0.1) |
-| `2.0.2` | 2026-09-09 | `^2.0` | [Browse](https://github.com/flarchive/ernestdefoe-hashtags/tree/archive/v2.0.2) |
-| `2.0.3` | 2026-09-11 | `^2.0` | [Browse](https://github.com/flarchive/ernestdefoe-hashtags/tree/archive/v2.0.3) |
-| `2.0.4` | 2026-10-12 | `^2.0` | [Browse](https://github.com/flarchive/ernestdefoe-hashtags/tree/archive/v2.0.4) |
-| `2.0.5` | 2026-10-17 | `^2.0` | [Browse](https://github.com/flarchive/ernestdefoe-hashtags/tree/archive/v2.0.5) |
+| — | — | — | — |
 
 Catalog entry: [packages/ernestdefoe-hashtags.json](https://github.com/flarchive/archive-index/blob/main/packages/ernestdefoe-hashtags.json)
 
