@@ -1,0 +1,19 @@
+/vendor
+/js/node_modules
+/js/dist-typings
+/js/coverage-ts
+/composer.lock
+/.idea
+/.vscode
+/.claude
+*.log
+.DS_Store
+Thumbs.db
+
+# Drafts and notes — kept locally, not part of the installable package
+/docs/announcement*.md
+/docs/changelog.md
+
+# PHPUnit run cache
+.phpunit.result.cache
+/tests/integration/tmp
