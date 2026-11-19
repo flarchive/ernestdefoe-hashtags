@@ -1,0 +1,31 @@
+<?php
+
+namespace Ernestdefoe\Hashtags\Listener;
+
+use Ernestdefoe\Hashtags\Job\SyncHashtagsJob;
+use Flarum\Post\Event\Hidden;
+use Flarum\Post\Event\Posted;
+use Flarum\Post\Event\Restored;
+use Flarum\Post\Event\Revised;
+use Illuminate\Contracts\Queue\Queue;
+
+/**
+ * Keeps `post_hashtag` in step with what posts actually say.
+ *
+ * Posted/Revised/Hidden/Restored go through the queue — a post with twenty
+ * hashtags should not add twenty round-trips to the save request. Deleted needs
+ * no listener: the foreign-key cascade removes a deleted post's rows, and
+ * counts are read live from the posts the reader can see.
+ */
+class SyncHashtagsOnPostSave
+{
+    public function __construct(
+        protected Queue $queue
+    ) {
+    }
+
+    public function handle(Posted|Revised|Hidden|Restored $event): void
+    {
+        $this->queue->push(new SyncHashtagsJob((int) $event->post->id));
+    }
+}

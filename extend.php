@@ -1,0 +1,87 @@
+<?php
+
+use Ernestdefoe\Hashtags\Api\Resource\HashtagResource;
+use Ernestdefoe\Hashtags\Console\PruneCommand;
+use Ernestdefoe\Hashtags\Console\ReindexCommand;
+use Ernestdefoe\Hashtags\Formatter\ConfigureHashtags;
+use Ernestdefoe\Hashtags\Listener\SyncHashtagsOnPostSave;
+use Ernestdefoe\Hashtags\Model\Hashtag;
+use Ernestdefoe\Hashtags\Search\Filter\HashtagFilter;
+use Ernestdefoe\Hashtags\Search\FulltextFilter;
+use Ernestdefoe\Hashtags\Search\HashtagSearcher;
+use Ernestdefoe\Hashtags\Settings\PerPage;
+use Flarum\Discussion\Search\DiscussionSearcher;
+use Flarum\Extend;
+use Flarum\Post\Event\Hidden;
+use Flarum\Post\Event\Posted;
+use Flarum\Post\Event\Restored;
+use Flarum\Post\Event\Revised;
+use Flarum\Search\Database\DatabaseSearchDriver;
+use Illuminate\Console\Scheduling\Event;
+
+return [
+    (new Extend\Frontend('forum'))
+        ->js(__DIR__.'/js/dist/forum.js')
+        // 🚨 Not optional: the two pages are chunks in here, and undeclared chunks 404.
+        ->jsDirectory(__DIR__.'/js/dist/forum')
+        ->css(__DIR__.'/less/forum.less')
+        /**
+         * Route names matter beyond the frontend: ConfigureHashtags builds the
+         * href for every rendered hashtag from `hashtag`, via the UrlGenerator.
+         * Renaming either route means clearing the formatter cache, because
+         * that prefix is baked into the compiled renderer.
+         */
+        ->route('/hashtag/{name}', 'hashtag')
+        ->route('/hashtags', 'hashtags'),
+
+    (new Extend\Frontend('admin'))
+        ->js(__DIR__.'/js/dist/admin.js'),
+
+    new Extend\Locales(__DIR__.'/locale'),
+
+    (new Extend\Formatter())
+        ->configure(ConfigureHashtags::class),
+
+    new Extend\ApiResource(HashtagResource::class),
+
+    /**
+     * String-literal key, not a class constant: extend.php runs on every boot, and
+     * reading the class at load time fatals every request while a deploy is
+     * mid-way through updating the autoloader. Inside the closure it's fine.
+     */
+    (new Extend\Settings())
+        ->default('ernestdefoe-hashtags.per_page', 60)
+        // A blank or non-numeric save deletes the setting, so it reads as the default again.
+        ->resetWhen('ernestdefoe-hashtags.per_page', fn ($value) => ! is_numeric($value))
+        ->serializeToForum('hashtagsPerPage', 'ernestdefoe-hashtags.per_page', fn ($value) => PerPage::clamp($value)),
+
+    (new Extend\SearchDriver(DatabaseSearchDriver::class))
+        /** The /hashtag/:name feed, and `hashtag:x` in the search box. */
+        ->addFilter(DiscussionSearcher::class, HashtagFilter::class)
+        /** GET /api/hashtags — browse page and composer autocomplete. */
+        ->addSearcher(Hashtag::class, HashtagSearcher::class)
+        ->setFulltext(HashtagSearcher::class, FulltextFilter::class),
+
+    /**
+     * Backfill for forums that installed this after they already had posts —
+     * see ReindexCommand for why re-parsing is the only way old posts can gain
+     * hashtag links.
+     */
+    (new Extend\Console())
+        ->command(ReindexCommand::class)
+        ->command(PruneCommand::class)
+        ->schedule(PruneCommand::class, function (Event $event): void {
+            $event->daily()->withoutOverlapping();
+        }),
+
+    (new Extend\Event())
+        ->listen(Posted::class, SyncHashtagsOnPostSave::class)
+        ->listen(Revised::class, SyncHashtagsOnPostSave::class)
+        /**
+         * Hiding a post retracts its hashtags; restoring reinstates them. Both
+         * go through the same queued sync as an edit — the syncer reads
+         * hidden_at rather than being told which way it moved.
+         */
+        ->listen(Hidden::class, SyncHashtagsOnPostSave::class)
+        ->listen(Restored::class, SyncHashtagsOnPostSave::class),
+];
